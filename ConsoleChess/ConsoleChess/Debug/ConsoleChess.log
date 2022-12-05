@@ -1,0 +1,4 @@
+﻿  Source.cpp
+C:\Users\Jack\source\repos\ConsoleChess\ConsoleChess\Source.cpp(265): warning C4715: 'myKingLocation': not all control paths return a value
+C:\Users\Jack\source\repos\ConsoleChess\ConsoleChess\Source.cpp(544): warning C4715: 'getPossibleMoves': not all control paths return a value
+  ConsoleChess.vcxproj -> C:\Users\Jack\source\repos\ConsoleChess\Debug\ConsoleChess.exe
