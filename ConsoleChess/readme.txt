@@ -5,3 +5,4 @@ Includes special moves castling and enpassant.
 Automatically detects all game endings.
 Could be expanded or loaded onto a GUI. Beyond current scope of the project.
 Further optimisation possible.
+.cpp file in /ConsoleChess subfolder
