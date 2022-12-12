@@ -17,7 +17,6 @@ struct coord {
 class Piece {//this probably needs a rewrite but i decided to stick with it 
 public:
 	char Colour = 0, Symbol = 0; //w=white b=black
-	coord Position; //essentially stores piece coordinates file a-h (stored numerically as 0-7), rank 1-8 (stored as 0-7). this is a worthless variable only called because of the way ValidMove() is written
 	bool HasMoved = 0;
 	bool CanEnpassantLeft = 0;
 	bool CanEnpassantRight = 0;
@@ -338,12 +337,7 @@ int getPossibleMoves(Piece board[8][8], coord square) {
 				}
 			}
 		}
-		//if ((board[square.x][square.y].Colour == 'W' &! (board[square.x][square.y + 1].Symbol == 'p' && board[square.x][square.y + 1].Colour == 'B'))
-		//|| (board[square.x][square.y].Colour == 'B' & !(board[square.x][square.y - 1].Symbol == 'p' && board[square.x][square.y - 1].Colour == 'W'))){//can't castle with your king in the way of an opposing pawn, it checks
-		//if ((board[square.x][square.y].Colour == 'W' && board[square.x + 2][square.y + 1].Symbol == 'p' && board[square.x + 2][square.y + 1].Colour == 'B')
-			//|| (board[square.x][square.y].Colour == 'B' && board[square.x + 2][square.y - 1].Symbol == 'p' && board[square.x + 2][square.y - 1].Colour == 'W')) {
 		if (board[square.x][square.y].HasMoved == 0) {//redundancy with validMove() but small, could remove there
-			
 			if (!squareIsCheck(board, square, board[square.x][square.y].Colour)) {//can't castle while in check
 				if (!squareIsCheck(board, coord(square.x + 1, square.y), board[square.x][square.y].Colour)) {//can't castle through a checked square
 					if (moveIsGood(board, square, coord(square.x + 2, square.y), board[square.x][square.y].Colour)) {//castle kingside
@@ -379,7 +373,7 @@ int getPossibleMoves(Piece board[8][8], coord square) {
 				possibleMoves[k] = coord(square.x, square.y + 2);
 				k++;
 			}
-			return k;//so that the function stops executing as soon as it is done, but have to write "return k" more often
+			return k;
 		}
 		else {
 			for (i = -1; i < 2; i++) {
@@ -434,7 +428,7 @@ int getPossibleMoves(Piece board[8][8], coord square) {
 		}
 		return k;
 	}
-	else if (board[square.x][square.y].Symbol == 'b') {//feels like a rewrite of Piece.ClearDiag()
+	else if (board[square.x][square.y].Symbol == 'b') {//feels like a light rewrite of ClearDiag()
 		for (i = 1; square.x + i < 8; i++) {
 			j = i;//right, up
 			if (square.y + j < 8) {
@@ -833,12 +827,3 @@ int main() {
 	gameEnd:
 	return 0;
 }
-
-
-//at the end of a turn need to call check function for current player before pushing changes from testBoard to board, can't move a piece to 
-//need to scan the board and set Pawn CanEnpaassant flag to 0 after every move or come up with a way to come back to it
-//ending conditions, stalemate - no possible moves, threefold repetition -  the exact same position is reached on the board 3 times, no pawn has moved or piece captured in the past fifty moves(each player getting fifty),
-//checkmate is impossible e.g. king and knight or bishop vs king.
-//maximum possible moves under the 50 move rule occurs if capture occurs on move 50 for every capturable piece ending with a pawn, 4*15*2*50 = 1500 = number of entries in array for determining threefold draws
-//this is wrong ^, only need an array of 50 for 3-fold repetition since a capture/pawn move resets 50 move rule and makes repetition with a prior position impossible.
-//could create a record of all moves and then check between turnNumber-move100
