@@ -6,3 +6,4 @@ Automatically detects all game endings.
 Could be expanded or loaded onto a GUI. Beyond current scope of the project.
 Further optimisation possible.
 .cpp file in /ConsoleChess subfolder
+outdated compiled .exe in /Debug subfolder
