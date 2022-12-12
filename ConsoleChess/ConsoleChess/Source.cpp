@@ -15,7 +15,7 @@ struct coord {
 
 
 class Piece {//this probably needs a rewrite but i decided to stick with it 
-public:
+public://this could probably just be a struct at this point...
 	char Colour = 0, Symbol = 0; //w=white b=black
 	bool HasMoved = 0;
 	bool CanEnpassantLeft = 0;
@@ -23,7 +23,7 @@ public:
 };
 
 
-void clearBoard(Piece board[8][8]) {//this does not clear memory --> causes leak over multiple games...
+void clearBoard(Piece board[8][8]) {//initialis(z)e board. Unnecessary but would be used if multiple games in one run was implimented.
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
 			board[i][j].Symbol = 0;
@@ -32,11 +32,11 @@ void clearBoard(Piece board[8][8]) {//this does not clear memory --> causes leak
 		}
 	}
 };
-void newBoard(Piece board[8][8]) {//need to construct pointers to pieces (stored in arrays?) use symbol to determine class?
+void newBoard(Piece board[8][8]) {//set up the board in the starting position
 	int i, j;
 	for (j = 0; j < 8; j++) {
 		if (j == 0) {//white pieces
-			for (i = 0; i < 8; i++) {// i thought else if would be normal here but vsc didn't like it *shrug*
+			for (i = 0; i < 8; i++) {
 				board[i][j].Colour = 'W';
 				if (i == 0 || i == 7)//rooks
 				board[i][j].Symbol = 'r';
@@ -68,7 +68,7 @@ void newBoard(Piece board[8][8]) {//need to construct pointers to pieces (stored
 			};
 		}
 		else if (j==7){
-			for (i = 0; i < 8; i++) {// i thought else if would be appropriate here but vsc didn't like it *shrug*
+			for (i = 0; i < 8; i++) {
 				board[i][j].Colour = 'B';
 				if (i == 0 || i == 7)//rooks
 				board[i][j].Symbol = 'r';
@@ -187,14 +187,14 @@ bool clearDiag(Piece board[8][8], coord square, coord destination) {// check if 
 };
 //ValidMove() should probably be integrated getPossibleMoves(), checking user input destination against possible moves, maybe later and maybe moved out of the class
 bool validMove(Piece board[8][8], coord square, coord destination) {
-	if (board[square.x][square.y].Symbol == 'p') {
+	if (board[square.x][square.y].Symbol == 'p') {//pawn
 		if (board[square.x][square.y].Colour == 'W' && board[destination.x][destination.y].Colour != 'W') {
 			if (destination.y == square.y + 1) {
 				return (square.x == destination.x && board[destination.x][destination.y].Symbol == 0)//simple move
 					|| (destination.x == square.x + 1 && ((board[destination.x][destination.y].Symbol != 0) || board[square.x][square.y].CanEnpassantRight == 1))//captures
 					|| (destination.x == square.x - 1 && ((board[destination.x][destination.y].Symbol != 0) || board[square.x][square.y].CanEnpassantLeft == 1));
 			}
-			else if (destination.y == square.y + 2) {
+			else if (destination.y == square.y + 2) {//double move
 				return board[square.x][square.y].HasMoved == 0 && board[square.x][square.y + 1].Symbol == 0 && board[square.x][square.y + 2].Symbol == 0 && square.x == destination.x;
 			}
 		}
@@ -204,38 +204,38 @@ bool validMove(Piece board[8][8], coord square, coord destination) {
 					|| (destination.x == square.x + 1 && ((board[destination.x][destination.y].Symbol != 0) || board[square.x][square.y].CanEnpassantRight == 1))//captures
 					|| (destination.x == square.x - 1 && ((board[destination.x][destination.y].Symbol != 0) || board[square.x][square.y].CanEnpassantLeft == 1));
 			}
-			else if (destination.y == square.y - 2) {
+			else if (destination.y == square.y - 2) {//double move
 				return board[square.x][square.y].HasMoved == 0 && board[square.x][square.y - 1].Symbol == 0 && board[square.x][square.y - 2].Symbol == 0 && square.x == destination.x;
 			}
 		}
 	}
-	else if (board[square.x][square.y].Symbol == 'b') {
+	else if (board[square.x][square.y].Symbol == 'b') {//bishop
 		return  board[destination.x][destination.y].Colour != board[square.x][square.y].Colour && (destination.x - square.x == destination.y - square.y || (destination.x - square.x == -(destination.y - square.y))) && clearDiag(board, square, destination);//dx=dy||dx=-dy and check path is clear
 	}
-	else if (board[square.x][square.y].Symbol == 'n') {
+	else if (board[square.x][square.y].Symbol == 'n') {//knight
 		return board[destination.x][destination.y].Colour != board[square.x][square.y].Colour && (((destination.x == square.x + 2 || destination.x == square.x - 2) && (destination.y == square.y + 1 || destination.y == square.y - 1)) || //knight can move across 2 and up/down 1
 			((destination.x == square.x + 1 || destination.x == square.x - 1) && (destination.y == square.y + 2 || destination.y == square.y - 2)));// or up/down 2 and across 1
 	}
-	else if (board[square.x][square.y].Symbol == 'r') {
+	else if (board[square.x][square.y].Symbol == 'r') {//rook
 		return clearLine(board, square, destination) && (destination.x == square.x || destination.y == square.y) && board[destination.x][destination.y].Colour != board[square.x][square.y].Colour;
 	}
-	else if (board[square.x][square.y].Symbol == 'q') {
+	else if (board[square.x][square.y].Symbol == 'q') {//queen
 		return board[destination.x][destination.y].Colour != board[square.x][square.y].Colour && ((clearLine(board, square, destination) && (destination.x == square.x || destination.y == square.y))
 			|| ((clearDiag(board, square, destination) && (destination.x - square.x == destination.y - square.y || destination.x - square.x == -(destination.y - square.y)))));
 	}
-	else if (board[square.x][square.y].Symbol == 'k') {
+	else if (board[square.x][square.y].Symbol == 'k') {//king
 		return board[destination.x][destination.y].Colour != board[square.x][square.y].Colour && (square.x - destination.x<2 && square.x - destination.x >-2) && (square.y - destination.y<2 && square.y - destination.y >-2)
 			|| (board[square.x][square.y].HasMoved==0 && ((destination.x == square.x + 2 && clearLine(board,square, coord(7, square.y))&& board[7][square.y].HasMoved==0) || (destination.x == square.x - 2 && clearLine(board, square, coord(0, square.y)) && board[0][square.y].HasMoved == 0)));
 	}
 	return 0;
 }
-// this is for checking if a square is checked by your opponent as if there's a piece on that square, whether there actually is or not (important for pawns)
+// this is for checking if a square is checked by your opponent as if there's a piece on that square, whether there actually is or not (important for pawns when validtating castling)
 //we iterate across all squares and if a square contains an opposite colour piece, see if the square we are checking is a valid move for that piece =
 bool squareIsCheck(Piece board[8][8], coord square, char colour) {
 	int i, j;
 	Piece pieceOld = board[square.x][square.y];//we need to test the square while it is not empty so we store all of the data about the square
 	board[square.x][square.y].Symbol = 't', board[square.x][square.y].Colour = 't';//set symbol and colour to arbitrary non-zero char 't'
-	char checkingColour;// this is the colour of piece that can check the square, i.e. the opposite colour to current player's
+	char checkingColour;//this is the colour of piece that can check the square, i.e. the opposite colour to current player's
 	if (colour == 'W') { checkingColour = 'B'; }
 	else checkingColour = 'W';
 	for (i = 0; i < 8; i++) {
@@ -262,9 +262,6 @@ coord myKingLocation(Piece board[8][8], char colour) {
 		}	 //could impliment some error code.
 	}
 };
-//king cannot castle while in check or through a square that would put it in check
-//call squareIsCheck() for king starting position through to king finishing position
-//I think i had to make this function outside of Piece class because it requires squareIsCheck, and myKingLocation functions which require Piece class to be defined
 void promote(Piece board[8][8], coord square) {//for move function if (Symbol == 'p' && (destination == 7 || destination == 0)) call this function to change symbol to chosen symbol.
 functionStart:
 	char targetPiece;
@@ -289,8 +286,7 @@ void clearEnpassant(Piece board[8][8], char colour) {
 };
 //for the isCheckmate() function we will declare an array (with 27 entries(max possible for a queen)) of coord variables. use an int function to fill for a piece at a square and return number of moves
 coord possibleMoves[27];// this is a global variable and probably bad practice... but it is required for current implimentation of canMove() function
-//this is needed to save hundreds of if statements in isCheckmate() and isStalemate(). this whole function is basically rewriting ValidMove for the sake of resource efficiency...
-//for the sake of the isCheckmate() function call king, then order of number of maximum possible moves (p,n,b,r,q), sometimes maybe reduces operations, could use statistics for order maybe
+//this is needed to save hundreds of if statements in isCheckmate() and isStalemate(). this whole function is basically for the sake of operation reduction...
 bool moveIsGood(Piece board[8][8], coord square, coord destination, char colour) {
 	if (validMove(board, square, destination)) {
 		Piece positionOld = board[square.x][square.y], destinationOld = board[destination.x][destination.y];//store old squares
@@ -307,13 +303,14 @@ bool moveIsGood(Piece board[8][8], coord square, coord destination, char colour)
 	}
 	else return 0;
 }
+//for the sake of the canMove() function call king, then ascending maximum possible moves (p,n,b,r,q), sometimes maybe reduces operations, could use statistics for order maybe
 int getPossibleMoves(Piece board[8][8], coord square) {
-	int i, j, k = 0;//the index of the coordinate of a valid move will be written to possibleMoves[k] will use k return to limit iteration on possibleMoves[] in isCheckmate to avoid extra checks outside
-				  //appropriate range. Probably a really bad practice to use an int function like this
+	int i, j, k = 0;//the index of the coordinate of a valid move will be written to possibleMoves[k] will use k return to limit iteration on possibleMoves[] in canMove to avoid extra checks outside
+			 //appropriate range. maybe bad practice to use an int function like this
 	if (board[square.x][square.y].Symbol == 0) {
 		return 0;
 	}
-	else if (board[square.x][square.y].Symbol == 'k') {//for king we don't need to check castling because castling is only possible if king's (square.x = +/-1 && square.y unchanged) is not check
+	else if (board[square.x][square.y].Symbol == 'k') {
 		for (i = -1; i < 2; i++) {
 			if (square.x + i < 0) {
 				continue;
