@@ -570,7 +570,7 @@ bool canMove(Piece board[8][8], char colour) {
 //iterate through all entries in record we start iteration at j = i+4 because it's the earliest possible duplicate position
 bool isThreefold(Piece record[8][8][100], int turnNumber, int move100) {//pass turnNumber because only current turn player's moves can lead to a repetition
 	int i, j, k, l;
-	for (i = turnNumber % 2; i < move100 - 7; i+=2) {//8 is minimum number of moves for a position repetition, starts from end of turn of last capture/pawn move for current player's turn only
+	for (i =  move100 % 2; i < move100 - 7; i+=2) {//8 is minimum number of moves for a position repetition, starts from end of turn of last capture/pawn move for current player's turn only
 		int repeats = 0;//reset repeats every time the board you're comparing against is changed
 		for (j = i + 4; j < move100; j += 2) {//must be on the same player's turn i.e. current player moves into the 3rd repetition of the position while it is their turn
 			bool matches = 1;//we say the records match until we find one that doesn't
@@ -790,13 +790,13 @@ int main() {
 				record[i][j][move100] = board[i][j];
 			}
 		}
-		move100++;
 		if (isThreefold(record, turnNumber, move100)) {//check if current player's move led to 3rd repetition of a position before incrementing 
 			drawBoard(board);
 			gameIsOver = 1;
 			cout << "This exact position has been repeated 3 times. Draw by repetition." << endl;
 			goto gameEnd;
 		}
+		move100++;
 		turnNumber++;
 		colour = getMyColour(turnNumber);
 		if (canMove(board, colour) == 0) {
