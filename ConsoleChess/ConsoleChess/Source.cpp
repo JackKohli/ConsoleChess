@@ -23,7 +23,7 @@ public://this could probably just be a struct at this point...
 };
 
 
-void clearBoard(Piece board[8][8]) {//initialis(z)e board. Unnecessary but would be used if multiple games in one run was implimented.
+void clearBoard(Piece board[8][8]) {//initialis(z)e board. Unnecessary but would be used if multiple games in one run was implemented.
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
 			board[i][j].Symbol = 0;
@@ -259,7 +259,7 @@ coord myKingLocation(Piece board[8][8], char colour) {
 			if (board[i][j].Symbol == 'k' && board[i][j].Colour == colour) {
 				return coord(i, j);
 			}//this returns a warning; not all control paths return a value but both kings are always on board so this always returns the king's position
-		}	 //could impliment some error code.
+		}	 //could implement some error code.
 	}
 };
 void promote(Piece board[8][8], coord square) {//for move function if (Symbol == 'p' && (destination == 7 || destination == 0)) call this function to change symbol to chosen symbol.
@@ -285,7 +285,7 @@ void clearEnpassant(Piece board[8][8], char colour) {
 	}
 };
 //for the isCheckmate() function we will declare an array (with 27 entries(max possible for a queen)) of coord variables. use an int function to fill for a piece at a square and return number of moves
-coord possibleMoves[27];// this is a global variable and probably bad practice... but it is required for current implimentation of canMove() function
+coord possibleMoves[27];// this is a global variable and probably bad practice... but it is required for current implementation of canMove() function
 //this is needed to save hundreds of if statements in isCheckmate() and isStalemate(). this whole function is basically for the sake of operation reduction...
 bool moveIsGood(Piece board[8][8], coord square, coord destination, char colour) {
 	if (validMove(board, square, destination)) {
